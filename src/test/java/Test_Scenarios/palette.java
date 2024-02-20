@@ -1,6 +1,8 @@
 package Test_Scenarios;
 
 import org.testng.annotations.AfterMethod;
+import java.util.Properties;
+
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -9,6 +11,8 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.List;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,32 +26,35 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class palette {
 	WebDriver driver;
-	@BeforeMethod
-	public void setUP() {
+	 Properties locators;
+	@BeforeMethod //basic setup
+	public void setUP()
+	{
+		
+		  try {
+	            // Load locators from properties file
+	            locators = new Properties();
+	            FileInputStream fis = new FileInputStream("locators.properties");
+	            locators.load(fis);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		  
+		  
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
 
-		driver.get("https://sadmin.paletteu.com/");
-		driver.findElement(By.xpath("//input[@placeholder='Email']")).sendKeys("superadmin@proceededu.net.com");
-		driver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys("superadmin@123");
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		driver.get(locators.getProperty("url"));
+		driver.findElement(By.xpath(locators.getProperty("email_xpath"))).sendKeys(locators.getProperty("email_value"));;
+		driver.findElement(By.xpath(locators.getProperty("password_xpath"))).sendKeys(locators.getProperty("password_value"));
+        driver.findElement(By.xpath(locators.getProperty("submit_btn_xpath"))).click();
+        
 	}
-	@Test(priority = 1)
+	@Test(priority = 1)//get details in home page
 	public void test_login() throws InterruptedException {
 		
-		
-		
-		
-//		 List<WebElement> elements = driver.findElements(By.xpath("/html/body/app-root/app-organizations-list/div/div[3]/div[2]/div/div/table/tbody/tr/td[1]/u"));
-//		 System.out.println("List");
-//	        // Print the text of each element
-//	        for (WebElement element : elements) {
-//	            System.out.println(element.getText());
-//	        }
-//		  int numberOfElements = 10; // Change this to the actual number of elements
-		
-		
+
 		  WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 	        for (int i = 1; i <= 15; i++) {
 	        	
@@ -55,9 +62,9 @@ public class palette {
 	            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//app-organizations-list//tr["+i+"]/td[1]/u")));
 	            System.out.println(element.getText());
 	            element.click();
-	            String AdminName = driver.findElement(By.xpath("/html/body/app-root/app-view-organization//table/tbody/tr/td[1]")).getText();
-	            String AdminEmailId = driver.findElement(By.xpath("/html/body/app-root/app-view-organization//table/tbody/tr/td[2]")).getText();
-	            String AdminStatus = driver.findElement(By.xpath("/html/body/app-root/app-view-organization//table/tbody/tr/td[3]")).getText();
+	            String AdminName = driver.findElement(By.xpath(locators.getProperty("admin_name_xpath"))).getText();
+	            String AdminEmailId = driver.findElement(By.xpath(locators.getProperty("admin_email_xpath"))).getText();
+	            String AdminStatus = driver.findElement(By.xpath(locators.getProperty("admin_status_xpath"))).getText();
 	            
 	            System.out.println("Admin Name : "+AdminName +"\n"+ "Email Id: "+ AdminEmailId +"\n"+"Sratus : "+AdminStatus+"\n");
 	            driver.navigate().back();
@@ -71,20 +78,18 @@ public class palette {
 		
 	  
 	}
-	@Test(priority = 2)
+	@Test(priority = 2)//Create organizations
     public void test_createOrg() throws Exception {
     	Thread.sleep(3000);
-		driver.findElement(By.xpath("/html/body/app-root/app-organizations-list/div/div[2]/div/div[3]/button")).click();
-		driver.findElement(By.xpath("/html/body/app-root/app-create-organization/div/form/div[1]/div[1]/div/div[2]/input")).sendKeys("Study");
-		driver.findElement(By.xpath("/html/body/app-root/app-create-organization/div/form/div[1]/div[1]/div/div[2]/input")).sendKeys("blr");
-		driver.findElement(By.xpath("/html/body/app-root/app-create-organization/div/form/div[1]/div[1]/div/div[3]/textarea")).sendKeys("random descrptionsss");
-		driver.findElement(By.xpath("/html/body/app-root/app-create-organization/div/form/div[2]/div/button")).click();
-//		String sucessText = driver.findElement(By.xpath("//*[@id=\"toast-container\"]")).getText();
-//		System.out.println(sucessText);
+		driver.findElement(By.xpath(locators.getProperty("create_orgBtn_xpath"))).click();
+		driver.findElement(By.xpath(locators.getProperty("org_name_xpath"))).sendKeys(locators.getProperty("org_name_value"));
+		driver.findElement(By.xpath(locators.getProperty("org_address_xpath"))).sendKeys(locators.getProperty("org_address_value"));
+		driver.findElement(By.xpath(locators.getProperty("org_desc_xpath"))).sendKeys(locators.getProperty("org_desc_value"));
+		driver.findElement(By.xpath(locators.getProperty("click_btn_reg"))).click();
+
     }
 	@AfterMethod
 	public void tearDown() {
-//		driver.findElement(By.xpath("/html/body/app-root/app-organizations-list/div/div[1]/div[2]/span/img")).click();
 		driver.quit();
 	}
 }

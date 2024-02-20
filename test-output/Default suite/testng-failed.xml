@@ -6,6 +6,7 @@
       <class name="Test_Scenarios.palette">
         <methods>
           <include name="setUP"/>
+          <include name="test_login"/>
           <include name="test_createOrg"/>
           <include name="tearDown"/>
         </methods>
