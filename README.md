@@ -1,0 +1,2 @@
+# JavaSelenium_Palette
+JavaSelenium
